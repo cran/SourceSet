@@ -1,0 +1,31 @@
+Package: SourceSet
+Type: Package
+Title: A Graphical Model Approach to Identify Primary Genes in
+        Perturbed Biological Pathways
+Version: 0.1.0
+Date: 2018-02-27
+Authors@R: c(person("Elisa", "Salviato", email = "elisa.salviato.88@gmail.com", role = c("aut", "cre")),
+  person("Vera", "Djordjilovic", email = "vera.djordjilovic@medisin.uio.no", role = "aut"),
+  person("Chiara","Romualdi",email="chiara.romualdi@unipd.it",role="aut"),
+  person("Monica","Chiogna",email="monica@stat.unipd.it",role="aut"))
+Maintainer: Elisa Salviato <elisa.salviato.88@gmail.com>
+Description: The algorithm pursues the identification of the set of variables driving the differences in two different experimental conditions (i.e., the primary genes) within a graphical model context. It uses the idea of simultaneously looking for the differences between two multivariate normal distributions in all marginal and conditional distributions associated with a decomposable graph, which represents the pathway under exam. The implementation accommodates genomics specific issues (low sample size and multiple testing issues) and provides a number of functions offering numerical and visual summaries to help the user interpret the obtained results. In order to use the (optional) 'Cytoscape' functionalities, the suggested 'r2cytoscape' package must be installed from the 'GitHub' repository ('devtools::install_github('cytoscape/r2cytoscape')'). 
+Depends: R (>= 2.10)
+Imports: gRbase, progress, reshape2, graph, igraph, gtools, methods,
+        plyr, scales
+License: AGPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Suggests: networkD3, ggplot2, grDevices, Rgraphviz, knitr, rmarkdown,
+        r2cytoscape, BiocStyle, Biobase, graphite, hgu95av2.db, ALL,
+        mvtnorm, org.Hs.eg.db
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2018-02-28 16:28:27 UTC; Elisetta
+Author: Elisa Salviato [aut, cre],
+  Vera Djordjilovic [aut],
+  Chiara Romualdi [aut],
+  Monica Chiogna [aut]
+Repository: CRAN
+Date/Publication: 2018-02-28 17:36:07 UTC
