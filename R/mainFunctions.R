@@ -856,6 +856,12 @@ sourceSet<-function(graphs,data,classes,seed=NULL,
                     shrink=FALSE,
                     return.permutations=FALSE){
 
+  ## Check columns names and nodes IDs
+  g.id<-unique(unlist(sapply(graphs,function(x) graph::nodes(x))))
+  n.mapped<- sum(colnames(data) %in% g.id)
+  
+  if( n.mapped==0 ) stop("Check data matrix columns names and graph nodes names, no match found")
+  
   ## Default shrinkage Estimation of Covariance Matrix
   # Optimal choice of parameters for the source set analysis
   shrink.function<-shrinkTEGS

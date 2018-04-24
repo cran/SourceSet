@@ -166,7 +166,7 @@ table(classes)
 ncol(data)
 
 ## ---- eval=TRUE, message=FALSE, warning=FALSE----------------------------
-library(graphite)
+library(graphite); library(graph)
 # pathways selection
 names<-c("Axon guidance","Cell cycle","Chronic myeloid leukemia","ErbB signaling pathway",
 "Neurotrophin signaling pathway","Pathways in cancer","Ras signaling pathway","Viral myocarditis")
@@ -177,6 +177,12 @@ pathways<-convertIdentifiers(pathways,"entrez")
 
 # For each pathway, build a graphNEL object representing its topology
 graphs<-lapply(pathways,function(p) pathwayGraph(p))
+
+# Match node IDs with the names of the data matrix columns (delete the prefix 'ENTREZID:')
+# (graphite version 1.24.1)
+graph::nodes(graphs[[1]])[1:3]
+colnames(data)[1:3]
+for(i in 1:length(graphs)) graph::nodes(graphs[[i]])<-gsub("ENTREZID:","",graph::nodes(graphs[[i]]))
 
 ## ------------------------------------------------------------------------
 graphs$`Chronic myeloid leukemia`

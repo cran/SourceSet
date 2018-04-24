@@ -1,11 +1,11 @@
-cbfe4eebf28a7239ac599ca80a816cb2 *DESCRIPTION
+8120187f30487ecdcc327731f705c029 *DESCRIPTION
 7bab39e68d2c808ee7d428cb2974054f *NAMESPACE
-9a962a0ce26096d0c6d11cc97d48a903 *R/mainFunctions.R
+0c2d21b615586bbc5233dc273a22ff92 *R/mainFunctions.R
 f7a800b17751b2cd8f94f202667c4b14 *build/vignette.rds
 3899fd8c83673197949262fdd3bf6ec3 *data/simulation.RData
-f9602de81f83e2c7cedc02654a692d38 *inst/doc/SourceSet.R
-f92242c45bc64d99032c17113f65c82b *inst/doc/SourceSet.Rmd
-99a5258e80924f9277709184f3e48459 *inst/doc/SourceSet.html
+5694255d4bccc84dee67cca0a6871b64 *inst/doc/SourceSet.R
+4d1a026add0db02e69ab560919db4735 *inst/doc/SourceSet.Rmd
+195124805a7b37229176c89356066ad3 *inst/doc/SourceSet.html
 8da61d1987f32dbc8ef7dfcd75574972 *inst/extdata/ALLsourceresult.RData
 3495b84614a6b2a6563d45251b43fb47 *inst/extdata/SourceSetStyle.xml
 219f51f15db6cf908180111e0f77da9b *inst/extdata/SourceSetUnionStyle.xml
@@ -21,7 +21,7 @@ d81bdd5a0bb3e4fc8655a4e7bc229fcc *man/infoSource.Rd
 f71a35efec6bf71d03682b2d8309fc71 *man/sourceSet.Rd
 df4a2848555877a98486968e01f24be8 *man/sourceUnionCytoscape.Rd
 2f458750d02137a5597cce7a68520827 *man/testMeanVariance.Rd
-f92242c45bc64d99032c17113f65c82b *vignettes/SourceSet.Rmd
+4d1a026add0db02e69ab560919db4735 *vignettes/SourceSet.Rmd
 6316c393d475030c9a460a76f2e23b47 *vignettes/bibliography.bib
 ba64d64bf807641349e54894579efd18 *vignettes/images/CytoALL.png
 dfa2443ac9b1eecb907251b1627ed7c5 *vignettes/images/CytoSimulation.png

@@ -450,7 +450,7 @@ In general, `sourceSet` function gives to the user full freedom in providing the
 By way of example, in `ALL` case study, we employed `graphite` to retrieve the graphical structure of a selection of KEGG pathways[^chimera] that contain at least one of chimera genes. In particular, we  selected the _Chronic myeloid leukemia_ pathway (i.e., the target pathway): it describes the impact of the ABL/BCR fusion genes in the cell. 
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
-library(graphite)
+library(graphite); library(graph)
 # pathways selection
 names<-c("Axon guidance","Cell cycle","Chronic myeloid leukemia","ErbB signaling pathway",
 "Neurotrophin signaling pathway","Pathways in cancer","Ras signaling pathway","Viral myocarditis")
@@ -461,6 +461,12 @@ pathways<-convertIdentifiers(pathways,"entrez")
 
 # For each pathway, build a graphNEL object representing its topology
 graphs<-lapply(pathways,function(p) pathwayGraph(p))
+
+# Match node IDs with the names of the data matrix columns (delete the prefix 'ENTREZID:')
+# (graphite version 1.24.1)
+graph::nodes(graphs[[1]])[1:3]
+colnames(data)[1:3]
+for(i in 1:length(graphs)) graph::nodes(graphs[[i]])<-gsub("ENTREZID:","",graph::nodes(graphs[[i]]))
 ```
 
 We observe that pathways are commonly translated into directed graphs, while the source set algorithm works with decomposable structures. However, it should be stressed that we can always obtain a decomposable one in a few steps (i.e., moralization and triangulation) and this feature is internally implemented in the `sourceSet` function.

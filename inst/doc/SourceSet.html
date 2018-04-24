@@ -11,7 +11,7 @@
 
 <meta name="author" content="Elisa Salviato, Vera Djordjilovic, Monica Chiogna and Chiara Romualdi" />
 
-<meta name="date" content="2018-02-28" />
+<meta name="date" content="2018-04-23" />
 
 <title>SourceSet package</title>
 
@@ -146,7 +146,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">SourceSet package</h1>
 <h4 class="author"><em>Elisa Salviato, Vera Djordjilovic, Monica Chiogna and Chiara Romualdi</em></h4>
-<h4 class="date"><em>2018-02-28</em></h4>
+<h4 class="date"><em>2018-04-23</em></h4>
 
 </div>
 
@@ -650,7 +650,7 @@ data.all&lt;-data.all[<span class="kw">rownames</span>(data.all) %in%<span class
 entrez.id&lt;-<span class="kw">paste</span>(hgu95av2ENTREZID[<span class="kw">rownames</span>(data.all)])
 <span class="co"># merge not unique code on mean value</span>
 data.all&lt;-<span class="kw">apply</span>(data.all,<span class="dv">2</span>,function(x,f) { <span class="kw">tapply</span>(x,f,mean) }, <span class="dt">f=</span>entrez.id)</code></pre></div>
-<p>After this selection our dataset consists of <span class="math inline">\(n_1 = 42\)</span> observations from the control condition (<code>NEG</code>, absence of rearrangement), <span class="math inline">\(n_2 = 37\)</span> observations from the second experimental condition (<code>BCR/ABL</code>, presence of gene rearrangement) and 8595 measured gene expression levels.</p>
+<p>After this selection our dataset consists of <span class="math inline">\(n_1 = 42\)</span> observations from the control condition (<code>NEG</code>, absence of rearrangement), <span class="math inline">\(n_2 = 37\)</span> observations from the second experimental condition (<code>BCR/ABL</code>, presence of gene rearrangement) and 8585 measured gene expression levels.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># sourceSet function arguments:</span>
 data&lt;-<span class="kw">t</span>(data.all)
 classes&lt;-<span class="kw">sapply</span>(group,function(x) switch(x,<span class="st">&quot;BCR/ABL&quot;</span>=<span class="dv">2</span>,<span class="st">&quot;NEG&quot;</span>=<span class="dv">1</span>))
@@ -659,7 +659,7 @@ classes&lt;-<span class="kw">sapply</span>(group,function(x) switch(x,<span clas
 ##  1  2 
 ## 42 37</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ncol</span>(data)</code></pre></div>
-<pre><code>## [1] 8595</code></pre>
+<pre><code>## [1] 8585</code></pre>
 </div>
 <div id="graphite" class="section level3">
 <h3>Pathway: <code>graphite</code> package</h3>
@@ -670,7 +670,7 @@ The primary interest of our work is not in the detection of the structure of a p
 </div>
 <p><br> In general, <code>sourceSet</code> function gives to the user full freedom in providing the underlying pathways, requiring only specific input data format (i.e., <code>graphNEL</code> objects). So, the user can provide a list of manually curated pathways, or use developed software to translate the bases of knowledge. To date, the most exhaustive resource available for this task is <a href="http://bioconductor.org/packages/graphite/"><code>graphite</code> BioC package</a>.</p>
 <p>By way of example, in <code>ALL</code> case study, we employed <code>graphite</code> to retrieve the graphical structure of a selection of KEGG pathways<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> that contain at least one of chimera genes. In particular, we selected the <em>Chronic myeloid leukemia</em> pathway (i.e., the target pathway): it describes the impact of the ABL/BCR fusion genes in the cell.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(graphite)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(graphite); <span class="kw">library</span>(graph)
 <span class="co"># pathways selection</span>
 names&lt;-<span class="kw">c</span>(<span class="st">&quot;Axon guidance&quot;</span>,<span class="st">&quot;Cell cycle&quot;</span>,<span class="st">&quot;Chronic myeloid leukemia&quot;</span>,<span class="st">&quot;ErbB signaling pathway&quot;</span>,
 <span class="st">&quot;Neurotrophin signaling pathway&quot;</span>,<span class="st">&quot;Pathways in cancer&quot;</span>,<span class="st">&quot;Ras signaling pathway&quot;</span>,<span class="st">&quot;Viral myocarditis&quot;</span>)
@@ -680,12 +680,20 @@ pathways  &lt;-<span class="st"> </span><span class="kw">pathways</span>(<span c
 pathways&lt;-<span class="kw">convertIdentifiers</span>(pathways,<span class="st">&quot;entrez&quot;</span>)
 
 <span class="co"># For each pathway, build a graphNEL object representing its topology</span>
-graphs&lt;-<span class="kw">lapply</span>(pathways,function(p) <span class="kw">pathwayGraph</span>(p))</code></pre></div>
+graphs&lt;-<span class="kw">lapply</span>(pathways,function(p) <span class="kw">pathwayGraph</span>(p))
+
+<span class="co"># Match node IDs with the names of the data matrix columns (delete the prefix 'ENTREZID:')</span>
+<span class="co"># (graphite version 1.24.1)</span>
+graph::<span class="kw">nodes</span>(graphs[[<span class="dv">1</span>]])[<span class="dv">1</span>:<span class="dv">3</span>]</code></pre></div>
+<pre><code>## [1] &quot;ENTREZID:1020&quot;  &quot;ENTREZID:10298&quot; &quot;ENTREZID:10371&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colnames</span>(data)[<span class="dv">1</span>:<span class="dv">3</span>]</code></pre></div>
+<pre><code>## [1] &quot;10&quot;   &quot;100&quot;  &quot;1000&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">for(i in <span class="dv">1</span>:<span class="kw">length</span>(graphs)) graph::<span class="kw">nodes</span>(graphs[[i]])&lt;-<span class="kw">gsub</span>(<span class="st">&quot;ENTREZID:&quot;</span>,<span class="st">&quot;&quot;</span>,graph::<span class="kw">nodes</span>(graphs[[i]]))</code></pre></div>
 <p>We observe that pathways are commonly translated into directed graphs, while the source set algorithm works with decomposable structures. However, it should be stressed that we can always obtain a decomposable one in a few steps (i.e., moralization and triangulation) and this feature is internally implemented in the <code>sourceSet</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">graphs$<span class="st">`</span><span class="dt">Chronic myeloid leukemia</span><span class="st">`</span></code></pre></div>
 <pre><code>## A graphNEL graph with directed edges
-## Number of Nodes = 71 
-## Number of Edges = 209</code></pre>
+## Number of Nodes = 78 
+## Number of Edges = 216</code></pre>
 </div>
 <div id="ALLresults" class="section level3">
 <h3>Results and discussion</h3>
