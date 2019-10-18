@@ -4,8 +4,9 @@
 \alias{sourceSet}
 \title{Source Set}
 \usage{
-sourceSet(graphs, data, classes, seed = NULL, theta = 1, permute = TRUE,
-  alpha = 0.05, shrink = FALSE, return.permutations = FALSE)
+sourceSet(graphs, data, classes, seed = NULL, theta = 1,
+  permute = TRUE, alpha = 0.05, shrink = FALSE,
+  return.permutations = FALSE)
 }
 \arguments{
 \item{graphs}{a list of \code{graphNEL} objects  representing the pathways to be analyzed.}
@@ -156,7 +157,7 @@ Westfall, P. and Young, S. (2017). Resampling-based multiple testing : examples 
 
 Djordjilovic, Vera and Chiogna, Monica (2017) Searching for a Source of Difference: a Graphical Model Approach. \href{http://paduaresearch.cab.unipd.it/11181/1/DjordjilovicChiognaTechReport2017.pdf}{[Working Paper]} WORKING PAPER SERIES, 4/2017, PADOVA
 
-Salviato et al. (2018). \code{SourceSet}: a graphical model approach to identify primary genes in perturbet biological pathways. Manuscript submitted for publication.
+Salviato et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbet biological pathways. (Accepted - PLOS Computational Biology).
 }
 \seealso{
 \code{\link[graphite]{pathways}}, \code{\link[SourceSet]{infoSource}}, \code{\link[SourceSet]{easyLookSource}}, \code{\link[SourceSet]{sourceSankeyDiagram}},  \code{\link[SourceSet]{sourceCytoscape}} and  \code{\link[SourceSet]{sourceUnionCytoscape}}

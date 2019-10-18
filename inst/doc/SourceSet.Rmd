@@ -367,7 +367,7 @@ cytoID.10<-sourceCytoscape(result2,collection.name = "Simulation")
 
 The visual node attributes size and fill color are defined in a dynamic manner through a visual mapping[^style] based on the indices available by the `infoSource` function (automatically uploaded in the bottom panel - right side). A discrete mapper between _source_ attribute and size is applied: a big size if the variable belongs to the secondary set (_2_), a medium size if the variable belongs to the primary set (_1_), and a small size otherwise (_0_). On the other hand, a color gradient mapper between fill node color and relevance is adopted.
 
-The default style can be changed manually either within  Cytoscape (for further information see [manual](http://manual.cytoscape.org/en/stable/Styles.html)) or within an R package  **`r2cytoscape`** through   _network SUID_ returned by the `sourceCytoscape` function (for further details see  [manual](https://github.com/cytoscape/cytoscape-automation/tree/master/for-scripters/R/r2cytoscape)).
+The default style can be changed manually either within  Cytoscape (for further information see [manual](http://manual.cytoscape.org/en/stable/Styles.html)) or within an R package  **`r2cytoscape`** through   _network SUID_ returned by the `sourceCytoscape` function (for further details see  [manual](https://github.com/cytoscape/r2cytoscape)).
 
 <br>![](images/CytoSimulation.png) <br>
 
@@ -577,11 +577,7 @@ cytoID.other.union<-sourceUnionCytoscape(results.all ,name.graphs =graph.other,
 The `sourceCytoscape` and` sourceUnionCytoscape` functions use the **`r2cytoscape`** package to connect to Cytoscape from R using CyREST. **`r2cytoscape`** can be downloaded from the Bioconductor or GitHub repository (for old version of R) as follows:
 
 ```{r, message=FALSE, warning=FALSE, eval=FALSE}
-# Install from Bioconductor
-source("https://bioconductor.org/biocLite.R")
-biocLite("r2cytoscape")
-
-# or.. Install from GitHub
+# Install from GitHub
 library(devtools)
 install_github("cytoscape/r2cytoscape")
 ```

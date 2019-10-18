@@ -2,8 +2,8 @@ Package: SourceSet
 Type: Package
 Title: A Graphical Model Approach to Identify Primary Genes in
         Perturbed Biological Pathways
-Version: 0.1.1
-Date: 2018-04-23
+Version: 0.1.3
+Date: 2019-10-17
 Authors@R: c(person("Elisa", "Salviato", email = "elisa.salviato.88@gmail.com", role = c("aut", "cre")),
   person("Vera", "Djordjilovic", email = "vera.djordjilovic@medisin.uio.no", role = "aut"),
   person("Chiara","Romualdi",email="chiara.romualdi@unipd.it",role="aut"),
@@ -16,16 +16,16 @@ Imports: gRbase, progress, reshape2, graph, igraph, gtools, methods,
 License: AGPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Suggests: networkD3, ggplot2, grDevices, Rgraphviz, knitr, rmarkdown,
         r2cytoscape, BiocStyle, Biobase, graphite, hgu95av2.db, ALL,
         mvtnorm, org.Hs.eg.db
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-04-23 16:11:27 UTC; Elisetta
+Packaged: 2019-10-17 09:07:27 UTC; esalviat
 Author: Elisa Salviato [aut, cre],
   Vera Djordjilovic [aut],
   Chiara Romualdi [aut],
   Monica Chiogna [aut]
 Repository: CRAN
-Date/Publication: 2018-04-24 08:00:41 UTC
+Date/Publication: 2019-10-18 22:00:03 UTC

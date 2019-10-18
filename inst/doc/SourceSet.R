@@ -248,11 +248,7 @@ sourceSankeyDiagram(results.all,height = 600,width = 800,map.name.variable = map
 #        map.name.variable =mapped.genes.symbol)
 
 ## ---- message=FALSE, warning=FALSE, eval=FALSE---------------------------
-#  # Install from Bioconductor
-#  source("https://bioconductor.org/biocLite.R")
-#  biocLite("r2cytoscape")
-#  
-#  # or.. Install from GitHub
+#  # Install from GitHub
 #  library(devtools)
 #  install_github("cytoscape/r2cytoscape")
 

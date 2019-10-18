@@ -33,7 +33,7 @@ A discrete mapper between \code{source} attribute and size is applied:
 }
 On the other hand, a color gradient mapper between fill node color and \code{relevance} is adopted: higher values are highlighted with darker blue color.
 
-The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape function} (for further details see \href{https://github.com/cytoscape/cytoscape-automation/tree/master/for-scripters/R/r2cytoscape}{manual}).
+The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape function} (for further details see \href{https://github.com/cytoscape/r2cytoscape}{manual}).
 
 It is also possible to call the sourceCytoscape function multiple times, with all the graphs being visualized in a unique session within a collection specified by collection.name.
 }

@@ -22,7 +22,7 @@ The intensity of the artificial perturbation is:
 data(simulation)
 }
 \description{
-This data contains the parameters used in the study of the finite case behavior of source set algorithm, as described in of Salviato et al. (2018).
+This data contains the parameters used in the study of the finite case behavior of source set algorithm, as described in of Salviato et al. (2019).
 }
 \details{
 The starting parameters of the reference condition are obtained by randomly selecting a gene set of the same cardinality as the order of the graph G, from the Acute Lymphocytic Leukemia (\code{\link[ALL]{ALL}}) dataset. These are then modified to represent the parameters of the perturbed condition.
@@ -34,9 +34,9 @@ Chiaretti, S. et al. (2005). Gene expression profiles of b-lineage adult acute l
 
 Salviato, E. et al. (2016). \code{simPATHy}: a new method for simulating data from perturbed biological pathways. Bioinformatics, 33(3), 456–457.
 
-Salviato, E. et al. (2018). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. Manuscript under submission.
+Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. Manuscript under submission.
 }
 \seealso{
-\code{\link[simPATHy]{simPATHy}}, \code{\link[ALL]{ALL}}
+\code{simPATHy}, \code{\link[ALL]{ALL}}
 }
 \keyword{datasets}

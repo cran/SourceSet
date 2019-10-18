@@ -1,6 +1,6 @@
 #' Simulated dataset
 #'
-#' This data contains the parameters used in the study of the finite case behavior of source set algorithm, as described in of Salviato et al. (2018).
+#' This data contains the parameters used in the study of the finite case behavior of source set algorithm, as described in of Salviato et al. (2019).
 #' @docType  data
 #' @usage data(simulation)
 #' @format A list class that contains the true parameters (\code{mu}, vector of means and \code{S}, covariances matrix) of two multivariate normal distributions in two different experimental conditions (\code{condition1}, reference condition and \code{condition2}, perturbed condition) and the underlying graphical structure G (\code{graph}. Six different perturbations are considered, see below. ).
@@ -20,13 +20,13 @@
 #' @details The starting parameters of the reference condition are obtained by randomly selecting a gene set of the same cardinality as the order of the graph G, from the Acute Lymphocytic Leukemia (\code{\link[ALL]{ALL}}) dataset. These are then modified to represent the parameters of the perturbed condition.
 #' Formally, starting from the parameters related to the reference group, the procedure act on means and variances so that the conditional distribution of the variables on which it does not directly intervene remains unchanged under the two conditions.
 #' However, this action affects the entire global joint distribution, thus creating the propagation effect. See Salviato et al. (2016) for more details.
-#' @seealso \code{\link[simPATHy]{simPATHy}}, \code{\link[ALL]{ALL}}
+#' @seealso \code{simPATHy}, \code{\link[ALL]{ALL}}
 #' @references
 #' Chiaretti, S. et al. (2005). Gene expression profiles of b-lineage adult acute lymphocytic leukemia reveal genetic patterns that identify lineage derivation and distinct mechanisms of transformation. Clinical Cancer Research, 11(20), 7209–7219.
 #'
 #' Salviato, E. et al. (2016). \code{simPATHy}: a new method for simulating data from perturbed biological pathways. Bioinformatics, 33(3), 456–457.
 #'
-#' Salviato, E. et al. (2018). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. Manuscript under submission.
+#' Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. Manuscript under submission.
 "simulation"
 
 
@@ -291,7 +291,7 @@ ripAllRootsClique<-function(graph){
      #  message(".. moralize graph\n")
      #} else { graph<- clipper:::mmmoralize(graph) }
 
-     if( !gRbase::is.TUG.graphNEL(graph) ) {
+     if( !gRbase::is.TUG(graph) ) {
        graph<- gRbase::triangulate(graph)
        #message(".. triangulate graph\n")
      }
@@ -467,7 +467,7 @@ testMeanVarianceDistribution<-function(data,classes,
 
   for(i in 1:N){
 
-    data_i<-data[mat[i,],]
+    data_i<-data[mat[i,],,drop=FALSE]
     rownames(data_i)<-cl_i<-paste(classes)
 
     param_i<-parameters(data = data_i,classes = cl_i,shrink = shrink, shrink.function = shrink.function, shrink.param = shrink.param_i )
@@ -573,7 +573,8 @@ singleSourceSet<-function(ordering,data,classes,seed=NULL,
     stop("the number of distinct classes must to be two")
   }
 
-  dataR<-data[,colnames(data) %in%  ordering$elements$variables]
+  # 2018-04-26 added drop
+  dataR<-data[,colnames(data) %in%  ordering$elements$variables,drop=FALSE]
 
   ## Indices (exclude empty separator - "S0")
   n_comp<-length(ordering$indices$all)
@@ -734,7 +735,7 @@ singleSourceSet<-function(ordering,data,classes,seed=NULL,
 #'
 #' Djordjilovic, Vera and Chiogna, Monica (2017) Searching for a Source of Difference: a Graphical Model Approach. \href{http://paduaresearch.cab.unipd.it/11181/1/DjordjilovicChiognaTechReport2017.pdf}{[Working Paper]} WORKING PAPER SERIES, 4/2017, PADOVA
 #'
-#' Salviato et al. (2018). \code{SourceSet}: a graphical model approach to identify primary genes in perturbet biological pathways. Manuscript submitted for publication.
+#' Salviato et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbet biological pathways. (Accepted - PLOS Computational Biology).
 #' @details The \code{sourceSet} approach  models the data of the same pathway in two different
 #' experimental conditions as realizations of two Gaussian graphical models sharing the same decomposable
 #' graph G. Here, G = (V,E) is obtained from the pathway topology conversion, where V and E
@@ -856,12 +857,17 @@ sourceSet<-function(graphs,data,classes,seed=NULL,
                     shrink=FALSE,
                     return.permutations=FALSE){
 
+  ## Check NA in data matrix
+  if(sum(is.na(data))>0){
+    stop("NAs not allowed in data matrix. Remove rows/columns that contain NAs or impute them (suggested function: impute.knn).")
+  }
+
   ## Check columns names and nodes IDs
   g.id<-unique(unlist(sapply(graphs,function(x) graph::nodes(x))))
   n.mapped<- sum(colnames(data) %in% g.id)
-  
+
   if( n.mapped==0 ) stop("Check data matrix columns names and graph nodes names, no match found")
-  
+
   ## Default shrinkage Estimation of Covariance Matrix
   # Optimal choice of parameters for the source set analysis
   shrink.function<-shrinkTEGS
@@ -886,6 +892,13 @@ sourceSet<-function(graphs,data,classes,seed=NULL,
   if(is.null(names(graphs))){
     names(graphs)<-paste0("graph",1:N)
   }
+  ind.na.name<-which(sapply(names(graphs),is.na))
+  ind.empty.name<-which(sapply(names(graphs), function(x) x==""))
+  ind.change<-sort(unique(c(ind.na.name,ind.empty.name)))
+  if(length(ind.change)>0){
+    names(graphs)[ind.change]<-paste0("graph",1:length(ind.change))
+  }
+
 
   classes<-as.numeric(classes)
   ncl<-table(classes)
@@ -903,6 +916,17 @@ sourceSet<-function(graphs,data,classes,seed=NULL,
   ## STEP 0: Identify all possible orderings
   message("Identifing all possible orderings..")
   graphs<-subGraphData(data,graphs)
+
+  ## check if (after sub graph) there are empty graphs
+  ind.remove.graph<-which(sapply(sapply(graphs,function(x) graph::nodes(x)),length)==0)
+  if(length(ind.remove.graph)>0){
+    msg<-paste0("Removed ",length(ind.remove.graph)," graphs: empty graph or no match found between nodes and data matrix elements.")
+    warning(msg)
+    graphs<-graphs[-ind.remove.graph]
+    if(length(graphs)==0){
+      stop("all graphs are empty or there is no match between nodes and data matrix elements.")
+    }
+  }
   list_ordering<-lapply(graphs,ripAllRootsClique)
 
 
@@ -1839,7 +1863,7 @@ scoreNode<-function(sourceObj){
 #' }
 #' On the other hand, a color gradient mapper between fill node color and \code{relevance} is adopted: higher values are highlighted with darker blue color.
 #'
-#' The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape function} (for further details see \href{https://github.com/cytoscape/cytoscape-automation/tree/master/for-scripters/R/r2cytoscape}{manual}).
+#' The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape function} (for further details see \href{https://github.com/cytoscape/r2cytoscape}{manual}).
 #'
 #' It is also possible to call the sourceCytoscape function multiple times, with all the graphs being visualized in a unique session within a collection specified by collection.name.
 #' @note The function use the \code{r2cytoscape} package to connect to Cytoscape from R using CyREST. \code{r2cytoscape} can be downloaded from:
@@ -2022,7 +2046,7 @@ sourceCytoscape<-function(sourceObj,
 #'
 #' The edges connecting nodes belonging to the graph induced by the source set of each graph are represented by a solid line; while, the edges that connect two variables linked in the union of the graphs, but not within the same source set of a single graph, have dotted lines (supplied only if \code{complete.edges=TRUE}).
 #'
-#' The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape} function (for further details see \href{https://github.com/cytoscape/cytoscape-automation/tree/master/for-scripters/R/r2cytoscape}{manual}).
+#' The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape} function (for further details see \href{https://github.com/cytoscape/r2cytoscape}{manual}).
 #'
 #' It is also possible to call the sourceCytoscape function multiple times, with all the graphs being visualized in a unique session within a collection specified by collection.name.
 

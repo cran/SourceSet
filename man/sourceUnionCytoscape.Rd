@@ -5,8 +5,9 @@
 \title{Visualize in Cytoscape the graphical union induced by the source sets of a collection of graphs}
 \usage{
 sourceUnionCytoscape(sourceObj, name.graphs = names(sourceObj),
-  collection.name = "SourceSetUnion", network.name = "UnionSourceSetsGraph",
-  map.name.variable = NULL, method = "bonferroni", complete.edges = TRUE,
+  collection.name = "SourceSetUnion",
+  network.name = "UnionSourceSetsGraph", map.name.variable = NULL,
+  method = "bonferroni", complete.edges = TRUE,
   return.unionGraph = FALSE)
 }
 \arguments{
@@ -37,7 +38,7 @@ On the other hand, a color gradient mapper between fill node color and \code{rel
 
 The edges connecting nodes belonging to the graph induced by the source set of each graph are represented by a solid line; while, the edges that connect two variables linked in the union of the graphs, but not within the same source set of a single graph, have dotted lines (supplied only if \code{complete.edges=TRUE}).
 
-The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape} function (for further details see \href{https://github.com/cytoscape/cytoscape-automation/tree/master/for-scripters/R/r2cytoscape}{manual}).
+The default style can be changed manually either within Cytoscape (for further information see \href{http://manual.cytoscape.org/en/stable/Styles.html}{manual}) or within an R package \code{r2cytoscape} through network SUID returned by the \code{sourceCytoscape} function (for further details see \href{https://github.com/cytoscape/r2cytoscape}{manual}).
 
 It is also possible to call the sourceCytoscape function multiple times, with all the graphs being visualized in a unique session within a collection specified by collection.name.
 }
