@@ -4,11 +4,16 @@
 \alias{sourceUnionCytoscape}
 \title{Visualize in Cytoscape the graphical union induced by the source sets of a collection of graphs}
 \usage{
-sourceUnionCytoscape(sourceObj, name.graphs = names(sourceObj),
+sourceUnionCytoscape(
+  sourceObj,
+  name.graphs = names(sourceObj),
   collection.name = "SourceSetUnion",
-  network.name = "UnionSourceSetsGraph", map.name.variable = NULL,
-  method = "bonferroni", complete.edges = TRUE,
-  return.unionGraph = FALSE)
+  network.name = "UnionSourceSetsGraph",
+  map.name.variable = NULL,
+  method = "bonferroni",
+  complete.edges = TRUE,
+  return.unionGraph = FALSE
+)
 }
 \arguments{
 \item{sourceObj}{a \code{SourceSetObj} objects, i.e. the output of the \code{\link[SourceSet]{sourceSet}} function.}
@@ -26,6 +31,9 @@ sourceUnionCytoscape(sourceObj, name.graphs = names(sourceObj),
 \item{complete.edges}{if \code{TRUE}, the graphs selected in \code{name.graphs} are merged and the induced graph of the variables that appear at least in a source set is returned. if \code{FALSE}, the subgraph induced by the variables in the source set of each graph specified in \code{name.graphs} is found, and their union is returned.}
 
 \item{return.unionGraph}{if \code{TRUE}, the function returns the data frame of the edges of the resulting union graph, together with information about the variables obtained internally through the \code{\link[SourceSet]{infoSource}} function.}
+}
+\value{
+The function returns an interactive session in Cytoscape.
 }
 \description{
 The function, thanks to the connection with the Cytoscape software, allows the user to create the graphical union induced by the source sets of a collection of graphs to be visualized in a unique session, while documenting interesting findings.
@@ -51,7 +59,7 @@ The function use the \code{r2cytoscape} package to connect to Cytoscape from R u
 
 To enable the display function to work properly, three simple steps are required:
 \itemize{
-   \item{ Download \href{http://www.cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
+   \item{ Download \href{https://cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
    \item{ Complete installation wizard;}
    \item{ Launch Cytoscape (before calling the functions).}
 }
@@ -69,13 +77,15 @@ graph.signaling<-names(results.all)[grep("signaling",names(results.all))]
 graph.other<-setdiff(names(results.all),graph.signaling)
 
 ## Signaling collection
-\donttest{
+
+if(interactive()){
 cytoID.signaling.union<-sourceUnionCytoscape(results.all,
       name.graphs =graph.signaling ,collection.name ="SignalingPathway",
       network.name ="SignalingUnion")
 }
 ## Other collection
-\donttest{
+
+if(interactive()){
 cytoID.other.union<-sourceUnionCytoscape(results.all ,
       name.graphs =graph.other,collection.name ="OtherPathway" ,
       network.name ="OtherUnion")

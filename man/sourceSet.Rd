@@ -4,9 +4,17 @@
 \alias{sourceSet}
 \title{Source Set}
 \usage{
-sourceSet(graphs, data, classes, seed = NULL, theta = 1,
-  permute = TRUE, alpha = 0.05, shrink = FALSE,
-  return.permutations = FALSE)
+sourceSet(
+  graphs,
+  data,
+  classes,
+  seed = NULL,
+  theta = 1,
+  permute = TRUE,
+  alpha = 0.05,
+  shrink = FALSE,
+  return.permutations = FALSE
+)
 }
 \arguments{
 \item{graphs}{a list of \code{graphNEL} objects  representing the pathways to be analyzed.}
@@ -101,63 +109,14 @@ While, if the regularized estimates are calculated (\code{shrink=TRUE}), asympto
 per-hypothesis permutation p-values to obtain the joint distribution of the p-values are needed.
 The number of permutations depends on the method, the alpa level chosen, and the number of hypotheses. A minimum number of 500 and a maximum number of 10.000 permutations are allowed.
 }
-\examples{
-
-
-#### Toy example: only one graph
-if(require(mvtnorm)){
-  # Generate two random samples of size 50 from two multivariate normal distributions
-  n<-50
-  # true parameters of class 1 and class 2
-  param.class1<-simulation$condition1
-  param.class2<-simulation$condition2$`10`$`2`
-
-  # simulated dataset
-  data.class1<-rmvnorm(n = n,mean =param.class1$mu ,sigma =param.class1$S)
-  data.class2<-rmvnorm(n = n,mean =param.class2$mu ,sigma=param.class2$S)
-
-  # Input arguments for the sourceSet function
-  data<-rbind(data.class1,data.class2)
-  classes<-c(rep(1,nrow(data.class1)),rep(2,nrow(data.class2)))
-  graphs<-list("toy.graph"=simulation$graph)
-
-  result<-sourceSet(graphs ,data ,classes ,seed = 123 ,permute =FALSE ,shrink =FALSE, alpha=0.05  )
-
-  # source set: primary disregulation (toy.graph)
-  result$toy.graph$primarySet
-  # secondary disregulation (toy.graph)
-  result$toy.graph$secondarySet
-  # all affected variables
-  unique(unlist(result$toy.graph$orderingSet))
-
-  # summary statistics
-  info<-infoSource(result)
-  info$variable
-  info$graph
-
-  # visual summaries
-  easyLookSource(result)
-  sourceSankeyDiagram(result)
-}
-
-# launch cytoscape and run:
-\donttest{
-sourceCytoscape(result,name.graphs = "toy.graph",collection.name = "Example")
-sourceUnionCytoscape(result ,collection.name = "Example")
-}
-
-### Real data:
-# see vignette, section Getting deepening
-vignette("SourceSet")
-}
 \references{
 Sales, G. et al. (2017). graphite: GRAPH Interaction from pathway Topological Environment, r package version 1.22.0 edition.
 
 Westfall, P. and Young, S. (2017). Resampling-based multiple testing : examples and methods for p-value adjustment. Wiley.
 
-Djordjilovic, Vera and Chiogna, Monica (2017) Searching for a Source of Difference: a Graphical Model Approach. \href{http://paduaresearch.cab.unipd.it/11181/1/DjordjilovicChiognaTechReport2017.pdf}{[Working Paper]} WORKING PAPER SERIES, 4/2017, PADOVA
+Djordjilovic, Vera and Chiogna, Monica (2022) Searching for a source of difference in graphical models. Journal of Multivariate Analysis 190, 104973
 
-Salviato et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbet biological pathways. (Accepted - PLOS Computational Biology).
+Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. PLoS computational biology 15 (10), e1007357.
 }
 \seealso{
 \code{\link[graphite]{pathways}}, \code{\link[SourceSet]{infoSource}}, \code{\link[SourceSet]{easyLookSource}}, \code{\link[SourceSet]{sourceSankeyDiagram}},  \code{\link[SourceSet]{sourceCytoscape}} and  \code{\link[SourceSet]{sourceUnionCytoscape}}

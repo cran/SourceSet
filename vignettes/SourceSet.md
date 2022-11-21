@@ -1,7 +1,7 @@
 ---
 title: "SourceSet package"
 author: "Elisa Salviato, Vera Djordjilovic, Monica Chiogna and Chiara Romualdi"
-date: "`r Sys.Date()`"
+date: "2022-11-03"
 output:
     html_document:
      theme: cosmo
@@ -77,7 +77,8 @@ In the following,  two examples illustrate the use of the *`SourceSet`* package:
 
 Install **`SourceSet`**  from the CRAN repository.
 
-```{r, eval=FALSE}
+
+```r
 install.packages("SourceSet")
 help(package = "SourceSet")
 ```
@@ -85,7 +86,8 @@ help(package = "SourceSet")
 ### Function `sourceSet`: input arguments {#sourcefun}
 
 We first have a look at the main function `sourceSet` which performs the actual analysis.  
-```{r, message=FALSE, warning=FALSE, eval = TRUE}
+
+```r
 library(SourceSet)
 #?sourceSet
 ```
@@ -107,9 +109,14 @@ Two additional arguments:
 We consider an example featured in the Simulation study of @SourceSetpackage. All the necessary parameters are contained in the data object `data("simulation")`. For  details on generating parameters which emulate  two experimental conditions within the Gaussian graphical models framework, we refer to the Supplementary material of the main article and [**`simPATHy`** CRAN package](https://CRAN.R-project.org/package=simPATHy ).
 
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 data("simulation")
 names(simulation)
+```
+
+```
+## [1] "graph"      "condition1" "condition2"
 ```
 
 In this case, it was assumed that the perturbation  affects directly only gene 5 (primary dysregulation). The perturbation is then propagated towards remaining genes (secondary dysregulation) by means of a network `simulation$graph`. 
@@ -117,7 +124,8 @@ In this case, it was assumed that the perturbation  affects directly only gene 5
 Parameters of the first or control condition, the mean $\mu_1$ and the variance matrix $\Sigma_1$,  are given by `simulation$condition1`. Parameters of the second condition,  $\mu_2$ and  $\Sigma_2$, reflecting the effect of the foregoing strong perturbation  are contained in `simulation$condition2$`5`$`2`. We use these parameters to generate two  random samples of size 50 from the corresponding  multivariate normal distributions.
 
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 if ( requireNamespace( "mvtnorm" )  ){
 
   set.seed(111)
@@ -147,14 +155,35 @@ if ( requireNamespace( "mvtnorm" )  ){
 
 
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 simulation$graph
+```
+
+```
+## A graphNEL graph with undirected edges
+## Number of Nodes = 10 
+## Number of Edges = 15
+```
+
+```r
 ripped<-gRbase::rip(simulation$graph)
 
 # number of cliques
 length(ripped$cliques)
+```
+
+```
+## [1] 5
+```
+
+```r
 # size of larger clique
 max(sapply(ripped$cliques,length))
+```
+
+```
+## [1] 4
 ```
 
 
@@ -164,9 +193,14 @@ max(sapply(ripped$cliques,length))
 We use the function `sourceSet` to analyze simulated data. 
 
 A progress bar shows the status of permutations[^permute] and the elapsed time for each input graph. 
-```{r, echo=TRUE, message=FALSE, warning=FALSE}
+
+```r
 result<-sourceSet(graphs ,data ,classes ,seed = 123 ,permute =FALSE ,shrink =FALSE, alpha=0.05  )
 class(result)
+```
+
+```
+## [1] "sourceSetList"
 ```
 ![](images/RunTimeSimulation.png)<br>
 
@@ -184,21 +218,45 @@ class(result)
 * `Graph`: decomposable graph used in the analysis. It may differ from the input graph. In fact, if  the input graph is not  decomposable, the function will internally moralize and triangulate it.
 
 
-```{r}
+
+```r
 names(result$source.node5)
 ```
 
-As anticipated, the  _source set_ is able to distinguish the primary dysregulation (`r result$source.node5$primarySet`) from the set of nodes affected by the perturbation due to network propagation (`r paste(setdiff(unique(unlist(result$source.node5$orderingSet)),result$source.node5$primarySet),sep=", ")`).
+```
+## [1] "primarySet"     "secondarySet"   "orderingSet"    "Decompositions"
+## [5] "Components"     "Elements"       "Threshold"      "Graph"         
+## [9] "PvalueGraph"
+```
 
-```{r}
+As anticipated, the  _source set_ is able to distinguish the primary dysregulation (5) from the set of nodes affected by the perturbation due to network propagation (3, 4, 6, 10, 8, 9, 7).
+
+
+```r
 # source set: primary disregulation
 result$source.node5$primarySet
+```
 
+```
+## [1] "5"
+```
+
+```r
 # secondary disregulation
 result$source.node5$secondarySet
+```
 
+```
+## [1] "3"  "4"  "6"  "10" "8"  "9"  "7"
+```
+
+```r
 # all affected variables
 unique(unlist(result$source.node5$orderingSet))
+```
+
+```
+## [1] "3"  "4"  "5"  "6"  "10" "8"  "9"  "7"
 ```
 
 ### Understand the output {#output}
@@ -208,47 +266,128 @@ _Source set_ algorithm decomposes each input graph in $k$ different clique  orde
 Each ordering is composed of $k$ components, and each component  is associated to a clique and a separator (the first separator  in the ordering is taken to be empty). A component represents a conditional distribution of the clique variables conditional on the separator variables. The _source set_ algorithm tests equality of these distributions in the two groups. Components may repeat across different orderings, and all information relative to them can be found in  `Decomposition`. In particular, a list of unique components (across all clique orderings) can be found in  `Components`, while the list of variables contained within each clique and separator is in `Elements`.
 
 
-For the graph of our example, the number of different orderings is `r length(result$source.node5$Decompositions)` and the number of unique components is  `r nrow(result$source.node5$Components)`.
+For the graph of our example, the number of different orderings is 5 and the number of unique components is  13.
 For example, when clique `C5` is root, featured components are _comp7_, _comp13_, _comp5_, _comp3_ and _comp12_. In particular, _comp12_ represents the marginal distribution of the clique `C5`, while _comp7_ represents the conditional distribution of the clique `C1` conditional on the separator `S1`.
 
-```{r}
+
+```r
 # number of orderings
 length(result$source.node5$Decompositions)
+```
+
+```
+## [1] 5
+```
+
+```r
 # number of unique components
 nrow(result$source.node5$Components)
+```
+
+```
+## [1] 13
+```
+
+```r
 # ordering with root clique 'C3'
 result$source.node5$Decompositions$C5
 ```
 
+```
+##        clique separator ind_clique ind_separator component    pvalue
+## comp7      C1        S1          1             6     comp7 0.4070312
+## comp13     C2        S3          2             8    comp13 0.0000000
+## comp5      C3        S4          3             9     comp5 0.2320751
+## comp3      C4        S2          4             7     comp3 0.5665353
+## comp12     C5        S0          5            10    comp12 0.0000000
+```
+
 The function will return an ordering source set ($\hat{D}_{G,i}$) for each of the $k$ orderings. Each set is composed of  the components for which the hypothesis of equality between the two groups was rejected. This information is contained in `orderingSet`, while the information regarding the multiple testing correction can be found in `Threshold`.
 
-If we look at the ordering given by the root `C5`, the adjusted  threshold that controls the FWER at the desired level  $\alpha=$ `r round(result$source.node5$Threshold$alpha,2)` is  `r round(result$source.node5$Threshold$value,4)`.  The components whose equality is rejected at this level are  _comp13_ e _comp12_.  The set $\hat{D}_{G,i}$ will thus contain both variables in `C2`, and variables in `C5`.
+If we look at the ordering given by the root `C5`, the adjusted  threshold that controls the FWER at the desired level  $\alpha=$ 0.05 is  0.0051.  The components whose equality is rejected at this level are  _comp13_ e _comp12_.  The set $\hat{D}_{G,i}$ will thus contain both variables in `C2`, and variables in `C5`.
 
-```{r}
+
+```r
 # alpha and corrected threshold
 result$source.node5$Threshold[c("alpha","value")]
+```
 
+```
+## $alpha
+## [1] 0.05
+## 
+## $value
+## [1] 0.005068823
+```
+
+```r
 # ordering source set when 'C5' is used as root clique
 result$source.node5$orderingSet$C5
+```
 
+```
+## [1] "4" "5" "6" "7"
+```
+
+```r
 # manual indentification of the ordering source set
 union(result$source.node5$Elements$C2,result$source.node5$Elements$C5)
 ```
 
+```
+## [1] "4" "5" "6" "7"
+```
+
 The estimated source set (or primary set) consists of variables that are common to all orderings source sets (the node 5). While, the secondary set consists of variables that are affected by some form of dysregulation (i.e., appear in at least one ordering source set) but are not responsible for the primary dysregulation. In this case, the algorithm is thus able to distinguish the primary and the secondary dysregolation. 
 
-```{r}
+
+```r
 # source set of each ordering
 result$source.node5$orderingSet
+```
 
+```
+## $C1
+## [1] "3" "4" "5"
+## 
+## $C2
+## [1] "4" "5" "6"
+## 
+## $C3
+## [1] "10" "5"  "8"  "9" 
+## 
+## $C4
+## [1] "3" "4" "5"
+## 
+## $C5
+## [1] "4" "5" "6" "7"
+```
+
+```r
 # primary disregulation
 result$source.node5$primarySet
+```
 
+```
+## [1] "5"
+```
+
+```r
 # secondary disregulation
 result$source.node5$secondarySet
+```
 
+```
+## [1] "3"  "4"  "6"  "10" "8"  "9"  "7"
+```
+
+```r
 # all affaceted variables
 unique(unlist(result$source.node5$orderingSet))
+```
+
+```
+## [1] "3"  "4"  "5"  "6"  "10" "8"  "9"  "7"
 ```
 
 
@@ -257,16 +396,24 @@ unique(unlist(result$source.node5$orderingSet))
 
 Although the interpretation of the source set for a single graph can seem intuitive, the interpretation of the results for a collection of overlapping graphs can be challenging. To simplify this task, **`SourceSet`** offers the function `infoSource`. Given a  `sourceSetList` object, `infoSource` provides useful summaries of the obtained results, guiding the user in identifying interesting variables.
 
-```{r}
+
+```r
 info<-infoSource(result)
 names(info)
 ```
 
+```
+## [1] "variable" "graph"
+```
+
 The list `info$graph` summarizes the results of the individual input graphs. Here we  find some summary statistics regarding the number of nodes within the estimated source set (`n.primary`), the secondary set (`n.secondary`), within the graph (`n.graph`),  as well as  the number of connected components of the underlying graph (`n.cluster`). The relative size of the estimated source set and the set of all the variable affected by some form of dysregulation (with respect to the graph size) is given in `primary.impact` and `total.impact`, respectively. Finally, a $p$-value for the hypothesis of equality of the two distributions associated to the given graph is reported. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::kable(info$graph,caption = "> info$graph")
-```
+
+Table: > info$graph
+
+|             | n.primary| n.secondary| n.graph| n.cluster| primary.impact| total.impact| adj.pvalue|
+|:------------|---------:|-----------:|-------:|---------:|--------------:|------------:|----------:|
+|source.node5 |         1|           7|      10|         1|            0.1|          0.8|          0|
 
 `info$variable` is a list with information regarding variables of the input graphs. Although some of the indices bear the same name as above, the interpretation is now slightly different. In particular:
 
@@ -289,9 +436,21 @@ Ideally, variables of the primary dysregulation will be elements of the source s
 In our toy example, the specificity will be 1 for all the considered variables, while the only variable with `relevance` different from 0 is variable 5. The variable 5 also achieves the maximum score. 
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::kable(info$variable[,-1],caption=" > info$variable")
-```
+
+Table:  > info$variable
+
+|   | n.primary| n.secondary| n.graph| specificity| primary.impact| total.impact|   score| relevance|
+|:--|---------:|-----------:|-------:|-----------:|--------------:|------------:|-------:|---------:|
+|5  |         1|           0|       1|           1|              1|            1|     Inf|         1|
+|6  |         0|           1|       1|           1|              0|            1| 1.42706|         0|
+|10 |         0|           1|       1|           1|              0|            1| 1.32143|         0|
+|8  |         0|           1|       1|           1|              0|            1| 1.32143|         0|
+|9  |         0|           1|       1|           1|              0|            1| 1.32143|         0|
+|1  |         0|           0|       1|           1|              0|            0| 0.44659|         0|
+|2  |         0|           0|       1|           1|              0|            0| 0.44659|         0|
+|3  |         0|           1|       1|           1|              0|            1| 0.42099|         0|
+|4  |         0|           1|       1|           1|              0|            1| 0.42099|         0|
+|7  |         0|           1|       1|           1|              0|            1| 0.00414|         0|
 
 
 ### Visual summary {#visual}
@@ -311,9 +470,12 @@ The function `easyLookSource`  summarizes the results  through a heatmap. The pl
 
 In the plot, the pathways are vertically ordered -- top to bottom -- according to the numbers of nodes in the source set. On the other hand, genes are horizontally ordered -- from left to right-- based on the number of times they appear in a source set.
 
-```{r, fig.align="center", fig.height=2, message=FALSE, warning=FALSE}
+
+```r
 easyLookSource(result)
 ```
+
+<img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" style="display: block; margin: auto;" />
 
 
 #### `sourceSankeyDiagram`
@@ -329,7 +491,8 @@ The implementation of the `sourceSankeyDiagram` function takes advantage of the 
 
 To better illustrate this visual tool, we consider a slight modification of our toy example so that   the true source set is composed of variables 5, 9, 8 e 10. 
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 if(requireNamespace("mvtnorm")){
   set.seed(222)
    
@@ -345,7 +508,8 @@ if(requireNamespace("mvtnorm")){
 }
 ```
 
-```{r echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE}
+
+```r
 sourceSankeyDiagram(result2,height = 150,width = 800)
 ```
 
@@ -358,7 +522,8 @@ sourceSankeyDiagram(result2,height = 150,width = 800)
 The input is as before an object of  the `sourceSetList` class.  A subset of the analyzed graphs can be selected by setting the parameter `name.graphs`; if unspecified all analyzed graphs will be visualized. It is also possible to call the  `sourceCytoscape` function multiple times, with all the graphs being visualized in a unique session within a collection specified by `collection.name`.
 
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
+
+```r
 # Lunch cytoscape and run the following commands
 
 # simulation 1: sourceset composed by variable 5
@@ -385,11 +550,26 @@ As an example, we used a well-known benchmark published by @Chiaretti on Acute L
 
 The expression values (deriving from Affymetrix single channel technology) are already appropriately normalized according to robust multiarray analysis and quantile normalization.
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 require("ALL")
 data("ALL")
 ALL
+```
 
+```
+## ExpressionSet (storageMode: lockedEnvironment)
+## assayData: 12625 features, 128 samples 
+##   element names: exprs 
+## protocolData: none
+## phenoData
+##   sampleNames: 01005 01010 ... LAL4 (128 total)
+##   varLabels: cod diagnosis ... date last seen (21 total)
+##   varMetadata: labelDescription
+## featureData: none
+## experimentData: use 'experimentData(object)'
+##   pubMedIds: 14684422 16243790 
+## Annotation: hgu95av2
 ```
 
 
@@ -401,55 +581,31 @@ Comparing patients with and without the B-cell receptor (ABL/BCR) gene rearrange
 
 We need to retrieve from the `ExpressionSet` object the expression matrix and the corresponding sample information for the individuals of interest. Specifically, we are interested in the subset of patients with B-cell type and BCR/ABL translocation (class 2) or without translocation (class 1). This information is hosted in the `BT` and `mol.biol` columns of `ALL` phenotype data.  
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# Retrieve expression matrix and phenotypes
-if (requireNamespace( "Biobase" )){
-  data.all<-Biobase::exprs(ALL)
-  pheno.all<-Biobase::pData(ALL)
-  
-  # Select individuals:
-  # BT: type and stage of the disease ('B' indicates B-cell ALL)
-  # mol.biol: molecular biology of cancer ('BCR/ABL' and 'NEG')
-  ind<- intersect(grep("B",pheno.all$BT), which(pheno.all$mol.biol %in% c("BCR/ABL","NEG")))
-  code<- rownames(pheno.all)[ind]
-  group<- paste(pheno.all$mol.biol[ind])
-  data.all<-data.all[,code]
-  
-  data.all[1:10,1:5]
-}
+
+```
+##              01005     01010    03002    04007     04008
+## 1000_at   7.597323  7.479445 7.567593 7.905312  7.065914
+## 1001_at   5.046194  4.932537 4.799294 4.844565  5.147762
+## 1002_f_at 3.900466  4.208155 3.886169 3.416923  3.945869
+## 1003_s_at 5.903856  6.169024 5.860459 5.687997  6.208061
+## 1004_at   5.925260  5.912780 5.893209 5.615210  5.923487
+## 1005_at   8.570990 10.428299 9.616713 9.983809 10.063484
+## 1006_at   3.656143  3.853979 3.646808 3.547361  3.771648
+## 1007_s_at 7.623562  7.543604 7.916954 7.516981  7.726716
+## 1008_f_at 8.903547  9.903953 8.494499 8.871669  9.424092
+## 1009_at   9.371888  9.322177 9.304982 9.627175  9.189420
 ```
 
 Moreover, it is  convenient to use Entrez gene IDs instead of manufacturer identifiers. It helps us to map genes in pathways. To this purpose we need the [**`hgu95av2.db`** BioC package](http://bioconductor.org/packages/hgu95av2.db/), as required in the annotation specification of ALL dataset (see `ALL@annotation`). 
 
 As some IDs could be repeated or not annotated, the final dataset will generally have a different size from the initial one; in case of not unique mapping IDs, we summarized them by the mean value.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# Convert identifiers:
-# map between manufacturer identifiers and Entrez Gene identifiers
 
-if( requireNamespace("hgu95av2.db") & requireNamespace("AnnotationDbi")  ){
-
-  require(hgu95av2.db)
-  require(AnnotationDbi)
-  
-  mapped_probes <- mappedkeys(hgu95av2ENTREZID)
-  # remove not mapped probes
-  data.all<-data.all[rownames(data.all) %in% mapped_probes,]
-  # convert identifiers
-  entrez.id<-paste(hgu95av2ENTREZID[rownames(data.all)])
-  # merge not unique code on mean value
-  data.all<-apply(data.all,2,function(x,f) { tapply(x,f,mean) }, f=entrez.id)
-  
-  # sourceSet function arguments:
-  data<-t(data.all)
-  classes<-sapply(group,function(x) switch(x,"BCR/ABL"=2,"NEG"=1))
-  table(classes)
-  ncol(data)
-
-}
+```
+## [1] 8582
 ```
 
-After this selection our dataset consists of $n_1 = 42$ observations from the control condition (`NEG`, absence of rearrangement), $n_2 = 37$ observations from the second experimental condition (`BCR/ABL`, presence of gene rearrangement) and `r nrow(data.all)` measured gene expression levels. 
+After this selection our dataset consists of $n_1 = 42$ observations from the control condition (`NEG`, absence of rearrangement), $n_2 = 37$ observations from the second experimental condition (`BCR/ABL`, presence of gene rearrangement) and 8582 measured gene expression levels. 
 
 ### Pathway: `graphite` package {#graphite}
 
@@ -461,7 +617,8 @@ In general, `sourceSet` function gives to the user full freedom in providing the
 
 By way of example, in `ALL` case study, we employed `graphite` to retrieve the graphical structure of a selection of KEGG pathways[^chimera] that contain at least one of chimera genes. In particular, we  selected the _Chronic myeloid leukemia_ pathway (i.e., the target pathway): it describes the impact of the ABL/BCR fusion genes in the cell. 
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
+
+```r
 if (requireNamespace("graphite") & requireNamespace("graph")   ){
 
   # pathways selection
@@ -489,15 +646,13 @@ We observe that pathways are commonly translated into directed graphs, while the
 
 ### Results and discussion {#ALLresults}
 
-```{r, message=FALSE, warning=FALSE, include=FALSE}
-path<-system.file("extdata","ALLsourceresult.RData",package = "SourceSet")
-load(file = path)
-```
+
 
 We use the `sourceSet` function to analyze the ALL dataset and the selected pathways. In this case, to examine a collection of graphs, the regularized estimate of the covariance matrix (`shrink=TRUE`) and the permutational p-value distribution (`permute=TRUE`) are preferable because of the medium/low number of replicates per class (for more details see section [_Function `sourceSet`_](#sourcefun)).
 
 
-```{r eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE}
+
+```r
 # It requires about 16 minutes:
 # run instead: load(file=system.file("extdata","ALLsourceresult.RData",package = "SourceSet"))
 results.all<-sourceSet(graphs,data,classes,seed =111 ,permute =TRUE ,shrink =TRUE )
@@ -508,7 +663,8 @@ The results are summarized through the `easyLookSource` function, where only  ge
 
 ABL1 (first column) is annotated in seven pathways, and apart from one (i.e., _Axon guidance_), it is always identified in the source set. While BCR (second column) is annotated in two pathways and for both, it is detected in the source set. Moreover, it is worth noting that, as expected, ABL and BCR are the only genes in the source set of the target pathway (sixth row). 
 
-```{r, fig.height=3, fig.width=10 }
+
+```r
 # Convert identifiers:
 # map between Entrez Gene identifiers and gene symbols
 if (requireNamespace( "org.Hs.eg.db" )  ){
@@ -526,26 +682,47 @@ if (requireNamespace( "org.Hs.eg.db" )  ){
 }
 ```
 
+![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-25-1.png)
+
 All this information and much more (such as useful indexes for exploratory analysis, see section [_Statistics_](#stat)) can be obtained in a tabular format using the `infoSource` function, inside the `variable` list. We point out that chimera genes also achieve the highest `score` and `relevance` values among all the annotated genes.
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 info.all<-infoSource(results.all,map.name.variable = mapped.genes.symbol)
 ```
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::kable(info.all$variable[1:5,],caption = "> info.all$variable")
-```
+
+Table: > info.all$variable
+
+|     |mapped.name | n.primary| n.secondary| n.graph| specificity| primary.impact| total.impact|   score| relevance|
+|:----|:-----------|---------:|-----------:|-------:|-----------:|--------------:|------------:|-------:|---------:|
+|25   |ABL1        |         7|           1|       8|       1.000|          0.875|          1.0| 3.86340|     0.875|
+|613  |BCR         |         2|           0|       2|       0.250|          1.000|          1.0| 4.22788|     0.250|
+|841  |CASP8       |         2|           0|       2|       0.250|          1.000|          1.0| 4.22788|     0.250|
+|857  |CAV1        |         1|           0|       1|       0.125|          1.000|          1.0| 4.38203|     0.125|
+|8900 |CCNA1       |         1|           0|       2|       0.250|          0.500|          0.5| 2.97958|     0.125|
 
 If we look at the `info.all$graph` for the _Chronic myeloid leukemia_ pathway, we notice that the source set algorithm highlights the fundamental role of the chimera, which with marginal methods, would be hidden because of the propagation of the perturbation (`n.secondary`), involving other 16 out of 67 genes. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::kable(info.all$graph,caption = "> info.all$graph")
-```
+
+Table: > info.all$graph
+
+|                               | n.primary| n.secondary| n.graph| n.cluster| primary.impact| total.impact| adj.pvalue|
+|:------------------------------|---------:|-----------:|-------:|---------:|--------------:|------------:|----------:|
+|Axon guidance                  |         0|          50|     126|         3|        0.00000|      0.39683|  0.0052740|
+|Cell cycle                     |        16|          14|     111|         1|        0.14414|      0.27027|  0.0045296|
+|Chronic myeloid leukemia       |         2|          16|      67|         3|        0.02985|      0.26866|  0.0078646|
+|ErbB signaling pathway         |         3|           5|      78|         1|        0.03846|      0.10256|  0.0495384|
+|Neurotrophin signaling pathway |         4|           0|      98|         2|        0.04082|      0.04082|  0.0052740|
+|Pathways in cancer             |         3|          49|     263|         4|        0.01141|      0.19772|  0.0004000|
+|Ras signaling pathway          |         2|          10|     170|         2|        0.01176|      0.07059|  0.0078646|
+|Viral myocarditis              |         7|           3|      25|         6|        0.28000|      0.40000|  0.0000000|
 
 The module composed of the chimera genes (_module 6_), is also detected in _Pathway in cancer_.  
 
 For _Viral Myocarditis_ pathway, we observe that the source set consists of three disconnected groups of primary genes, one of which  (_module 7_) comprises ABL1. This behavior could be due to the high fragmentation of the pathway itself; in fact, it is composed of six distinct clusters (`info.all$graph$n.cluster`) and a total of only 25 nodes (`info.all$graph$n.graph`).
 
-```{r, echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE}
+
+```r
 sourceSankeyDiagram(results.all,height = 600,width = 800,map.name.variable = mapped.genes.symbol)
 ```
 
@@ -554,7 +731,8 @@ To deepen the interpretation of each pathway by highlighting the results of the 
 
 In this case, it may be useful to subdivide the pathways into several groups according to a biological rationale (for example distinguishing those of signal from the others) and highlight the relations between source sets of different groups through their graphical union. To do this, simply enter the names of the pathways of each group in the `name.graphs`  argument and load them into different collections.
 
-```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+```r
 # NB: Remember to launch cytoscape before running the following commands
 
 # Create two collections of pathways to visualize the results
@@ -583,7 +761,8 @@ cytoID.other.union<-sourceUnionCytoscape(results.all ,name.graphs =graph.other,
 ### Note on Cytoscape {#cyto}
 The `sourceCytoscape` and` sourceUnionCytoscape` functions use the **`r2cytoscape`** package to connect to Cytoscape from R using CyREST. **`r2cytoscape`** can be downloaded from the Bioconductor or GitHub repository (for old version of R) as follows:
 
-```{r, message=FALSE, warning=FALSE, eval=FALSE}
+
+```r
 # Install from GitHub
 library(devtools)
 install_github("cytoscape/r2cytoscape")

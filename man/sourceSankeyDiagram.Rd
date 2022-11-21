@@ -4,9 +4,15 @@
 \alias{sourceSankeyDiagram}
 \title{Create a D3 JavaScript Sankey diagram}
 \usage{
-sourceSankeyDiagram(sourceObj, name.graphs = names(sourceObj),
-  map.name.variable = NULL, cutoff = 50, cut.extra.module = TRUE,
-  height = NULL, width = NULL)
+sourceSankeyDiagram(
+  sourceObj,
+  name.graphs = names(sourceObj),
+  map.name.variable = NULL,
+  cutoff = 50,
+  cut.extra.module = TRUE,
+  height = NULL,
+  width = NULL
+)
 }
 \arguments{
 \item{sourceObj}{a \code{SourceSetObj} objects, i.e. the output of the \code{\link[SourceSet]{sourceSet}} function}
@@ -22,6 +28,9 @@ sourceSankeyDiagram(sourceObj, name.graphs = names(sourceObj),
 \item{height}{numeric height (in pixels) for the network graph's frame area}
 
 \item{width}{numeric width (in pixels) for the network graph's frame area}
+}
+\value{
+The function returns an interactive \code{sankeyNetwork} object.
 }
 \description{
 The function \code{sourceSankeyDiagram} allows to summarize the results obtained from the \code{\link[SourceSet]{sourceSet}} function through a Sankey diagram, highlighting the relationships among nodes, graphs, and source sets.

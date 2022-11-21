@@ -4,7 +4,8 @@
 \name{simulation}
 \alias{simulation}
 \title{Simulated dataset}
-\format{A list class that contains the true parameters (\code{mu}, vector of means and \code{S}, covariances matrix) of two multivariate normal distributions in two different experimental conditions (\code{condition1}, reference condition and \code{condition2}, perturbed condition) and the underlying graphical structure G (\code{graph}. Six different perturbations are considered, see below. ).
+\format{
+A list class that contains the true parameters (\code{mu}, vector of means and \code{S}, covariances matrix) of two multivariate normal distributions in two different experimental conditions (\code{condition1}, reference condition and \code{condition2}, perturbed condition) and the underlying graphical structure G (\code{graph}. Six different perturbations are considered, see below. ).
 
 The differences between the two conditions are driven by:
 \itemize{
@@ -17,7 +18,8 @@ The intensity of the artificial perturbation is:
   \item{ mild (\code{simulation$condition2$`10`$`1.2`})}
   \item{ moderate (\code{simulation$condition2$`10`$`1.6`})}
   \item{ strong (\code{simulation$condition2$`10`$`2`})}
-}}
+}
+}
 \usage{
 data(simulation)
 }
@@ -34,7 +36,7 @@ Chiaretti, S. et al. (2005). Gene expression profiles of b-lineage adult acute l
 
 Salviato, E. et al. (2016). \code{simPATHy}: a new method for simulating data from perturbed biological pathways. Bioinformatics, 33(3), 456–457.
 
-Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. Manuscript under submission.
+Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. PLoS computational biology 15 (10), e1007357.
 }
 \seealso{
 \code{simPATHy}, \code{\link[ALL]{ALL}}

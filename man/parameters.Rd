@@ -4,8 +4,13 @@
 \alias{parameters}
 \title{Estimation of parameters for test equality of two normal distributions}
 \usage{
-parameters(data, classes, shrink = TRUE, shrink.function = shrinkTEGS,
-  shrink.param = list(probs = 0.05, type = "min"))
+parameters(
+  data,
+  classes,
+  shrink = TRUE,
+  shrink.function = shrinkTEGS,
+  shrink.param = list(probs = 0.05, type = "min")
+)
 }
 \arguments{
 \item{data}{an expression matrix with colnames for variables and row names for samples}
@@ -17,6 +22,9 @@ parameters(data, classes, shrink = TRUE, shrink.function = shrinkTEGS,
 \item{shrink.function}{function that implements the shrinkage method. It must return a list object with all the elements required as input arguments in \code{\link[SourceSet]{testMeanVariance}}. Default is \code{\link[SourceSet]{shrinkTEGS}} function.}
 
 \item{shrink.param}{additional parameters to pass as input arguments of the shrink function specified in the \code{shrink.function}.}
+}
+\value{
+The function returns a list containing: three matrices with maximum likelihood or the shrinkage estimates (pooled, condition1 and condition2), and a list with the used parameters.
 }
 \description{
 The function estimates the parameters of two normal distributions. Both maximum likelihood estimates and shrinkage estimate of covariance matrices are supplied.

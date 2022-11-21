@@ -4,14 +4,25 @@
 \alias{easyLookSource}
 \title{Easy look results}
 \usage{
-easyLookSource(sourceObj, name.graphs = names(sourceObj),
-  map.name.variable = NULL, label.variable = "Variable",
-  label.graph = "Graph", subname.variable = 10, subname.graph = 20,
-  maxnum.variable = 50, maxnum.graph = 30,
-  title = "Source Set for each Pathway", subtitle = NULL,
-  coord.equal = TRUE, coord.flip = FALSE, strsplit.variable = " ",
-  strsplit.graph = " ", col.primary = "#324E7B",
-  col.secondary = "#86A6DF")
+easyLookSource(
+  sourceObj,
+  name.graphs = names(sourceObj),
+  map.name.variable = NULL,
+  label.variable = "Variable",
+  label.graph = "Graph",
+  subname.variable = 10,
+  subname.graph = 20,
+  maxnum.variable = 50,
+  maxnum.graph = 30,
+  title = "Source Set for each Pathway",
+  subtitle = NULL,
+  coord.equal = TRUE,
+  coord.flip = FALSE,
+  strsplit.variable = " ",
+  strsplit.graph = " ",
+  col.primary = "#324E7B",
+  col.secondary = "#86A6DF"
+)
 }
 \arguments{
 \item{sourceObj}{a \code{SourceSetObj} objects, i.e. the output of the \code{\link[SourceSet]{sourceSet}} function}
@@ -47,6 +58,9 @@ easyLookSource(sourceObj, name.graphs = names(sourceObj),
 \item{col.primary}{cell color for the variables responsable of primary dysregulation}
 
 \item{col.secondary}{cell color for the variables responsable of secondary dysregulation}
+}
+\value{
+The function returns a \code{ggplot} object.
 }
 \description{
 The function \code{easyLookSource}e allows to summarize the results obtained from the \code{\link[SourceSet]{sourceSet}} function through a heatmap, using \code{\link[ggplot2]{ggplot}} library.

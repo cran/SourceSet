@@ -15,6 +15,9 @@ shrinkTEGS(s, s1, s2, param = list(probs = 0.05, type = "min"))
 
 \item{param}{list of parameters: \itemize{\item{\code{lamda}: a vector of lambdas (to be supplied only if some custom lambdas are to be used)} \item{\code{type}: minimum (\code{min}), maximum (\code{max}) or optimal (\code{opt})} \item {\code{probs}: the numeric value of probability with value in [0,1]}}}
 }
+\value{
+The function returns a list of shrink covariance matrices.
+}
 \description{
 The function adds a small quantity to the diagonals of covariance matrix estimates to regularize them.
 }
@@ -30,6 +33,8 @@ To determine the quantity to add to the diagonals of covariance matrices, the fu
 It should be stressed that the default parameters for TEGS shrink estimator allow to compare the log likelihood criterion among distributions if the \code{\link[SourceSet]{testMeanVariance}} is performed.
 }
 \examples{
+
+
 if(require(mvtnorm)){
 
   ## Generate two random samples of size 50 from two multivariate normal distributions
@@ -62,6 +67,7 @@ if(require(mvtnorm)){
   def.shrink<-shrinkTEGS(s,s1,s2,param = list(type="opt",probs=0.4))
   def.shrink$lambda
 }
+
 }
 \references{
 Huang, Y.-T. and Lin, X. (2013). Gene set analysis using variance component tests. BMC Bioinformatics, 14(1), 210.

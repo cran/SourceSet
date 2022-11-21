@@ -4,9 +4,13 @@
 \alias{sourceCytoscape}
 \title{Visualize in Cytoscape a collection of graphs analyzed with the source set algorithm}
 \usage{
-sourceCytoscape(sourceObj, name.graphs = names(sourceObj),
-  collection.name = "SourceCollection", map.name.variable = NULL,
-  method = "bonferroni")
+sourceCytoscape(
+  sourceObj,
+  name.graphs = names(sourceObj),
+  collection.name = "SourceCollection",
+  map.name.variable = NULL,
+  method = "bonferroni"
+)
 }
 \arguments{
 \item{sourceObj}{a \code{SourceSetObj} objects, i.e. the output of the \code{\link[SourceSet]{sourceSet}} function.}
@@ -18,6 +22,9 @@ sourceCytoscape(sourceObj, name.graphs = names(sourceObj),
 \item{map.name.variable}{a list of customized labels to be associated with the names of the genes. Each list element must contain only one value (i.e. the new label), and the name of each element must be associated with the names of the genes given as input to the \code{\link[SourceSet]{sourceSet}} function (column names of \code{data} input argument). If a label is not mapped, the original name is used.}
 
 \item{method}{correction method for p-values calculated on graphs. The adjustment methods allowed are: \code{fdr} (default), \code{holm}, \code{hochberg}, \code{hommel}, \code{bonferroni}, \code{BH}, \code{BY} or \code{none}. For more details refer to \code{\link[stats]{p.adjust}}.}
+}
+\value{
+The function returns an interactive session in Cytoscape.?
 }
 \description{
 The function, thanks to the connection with the Cytoscape software, allows the user to create a collection of graphs to be visualized in a unique session, while documenting interesting findings.
@@ -46,7 +53,7 @@ The function use the \code{r2cytoscape} package to connect to Cytoscape from R u
 
 To enable the display function to work properly, three simple steps are required:
 \itemize{
-   \item{ Download \href{http://www.cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
+   \item{ Download \href{https://cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
    \item{ Complete installation wizard;}
    \item{ Launch Cytoscape (before calling the functions).}
 }
@@ -64,16 +71,19 @@ graph.signaling<-names(results.all)[grep("signaling",names(results.all))]
 graph.other<-setdiff(names(results.all),graph.signaling)
 
 ## Signaling collection
-\donttest{
+
+if(interactive()){
 cytoID.signaling<-sourceCytoscape(results.all,
     name.graphs = graph.signaling, collection.name ="SignalingPathway")
 }
 
 ## Other collection
-\donttest{
+if(interactive()){
 cytoID.other<-sourceCytoscape(results.all,
     name.graphs = graph.other, collection.name ="OtherPathway")
 }
+
+
 }
 \seealso{
 \code{\link[SourceSet]{sourceSet}}, \code{\link[SourceSet]{infoSource}}. \code{\link[SourceSet]{sourceUnionCytoscape}}, \code{r2cytoscape}

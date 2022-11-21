@@ -26,7 +26,7 @@
 #'
 #' Salviato, E. et al. (2016). \code{simPATHy}: a new method for simulating data from perturbed biological pathways. Bioinformatics, 33(3), 456–457.
 #'
-#' Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. Manuscript under submission.
+#' Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. PLoS computational biology 15 (10), e1007357.
 "simulation"
 
 
@@ -46,7 +46,10 @@
 #' @note It should be stressed that the default parameters for TEGS shrink estimator allow to compare the log likelihood criterion among distributions if the \code{\link[SourceSet]{testMeanVariance}} is performed.
 #' @references Huang, Y.-T. and Lin, X. (2013). Gene set analysis using variance component tests. BMC Bioinformatics, 14(1), 210.
 #' @seealso \code{\link[SourceSet]{testMeanVariance}}, \code{\link[SourceSet]{parameters}}
+#' @return The function returns a list of shrink covariance matrices.
 #' @examples
+#'
+#'
 #' if(require(mvtnorm)){
 #'
 #'   ## Generate two random samples of size 50 from two multivariate normal distributions
@@ -79,6 +82,7 @@
 #'   def.shrink<-shrinkTEGS(s,s1,s2,param = list(type="opt",probs=0.4))
 #'   def.shrink$lambda
 #' }
+#'
 #' @export
 shrinkTEGS<-function(s,s1,s2,param=list(probs=0.05,type="min")){
 
@@ -117,6 +121,7 @@ shrinkTEGS<-function(s,s1,s2,param=list(probs=0.05,type="min")){
 #' @param shrink.function function that implements the shrinkage method. It must return a list object with all the elements required as input arguments in \code{\link[SourceSet]{testMeanVariance}}. Default is \code{\link[SourceSet]{shrinkTEGS}} function.
 #' @param shrink.param additional parameters to pass as input arguments of the shrink function specified in the \code{shrink.function}.
 #' @seealso \code{\link[SourceSet]{shrinkTEGS}}, \code{\link[SourceSet]{testMeanVariance}}
+#' @return The function returns a list containing: three matrices with maximum likelihood or the shrinkage estimates (pooled, condition1 and condition2), and a list with the used parameters.
 #' @examples
 #' if(require(mvtnorm)){
 #'   ## Generate two random samples of size 50 from two multivariate normal distributions
@@ -279,7 +284,7 @@ ripAllRootsClique<-function(graph){
 
 
   ## check graph
-  if(!(class(graph)=="graphNEL") ){
+  if( !inherits(graph,"graphNEL") ){ #!(class(graph)=="graphNEL")
      stop("graph argument is not a graphNEL object")
    } else {
 
@@ -564,7 +569,7 @@ singleSourceSet<-function(ordering,data,classes,seed=NULL,
   }
 
   ## check allOrd
-  if(!(class(ordering)=="allOrd") ){
+  if( !inherits(ordering,"allOrd") ){ #!(class(ordering)=="allOrd")
     stop("ordering argument is not an allOrd object. Use ripAllRootsClique function.")
   }
   ## check number of classes
@@ -733,9 +738,9 @@ singleSourceSet<-function(ordering,data,classes,seed=NULL,
 #'
 #' Westfall, P. and Young, S. (2017). Resampling-based multiple testing : examples and methods for p-value adjustment. Wiley.
 #'
-#' Djordjilovic, Vera and Chiogna, Monica (2017) Searching for a Source of Difference: a Graphical Model Approach. \href{http://paduaresearch.cab.unipd.it/11181/1/DjordjilovicChiognaTechReport2017.pdf}{[Working Paper]} WORKING PAPER SERIES, 4/2017, PADOVA
+#' Djordjilovic, Vera and Chiogna, Monica (2022) Searching for a source of difference in graphical models. Journal of Multivariate Analysis 190, 104973
 #'
-#' Salviato et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbet biological pathways. (Accepted - PLOS Computational Biology).
+#' Salviato, E. et al. (2019). \code{SourceSet}: a graphical model approach to identify primary genes in perturbed biological pathways. PLoS computational biology 15 (10), e1007357.
 #' @details The \code{sourceSet} approach  models the data of the same pathway in two different
 #' experimental conditions as realizations of two Gaussian graphical models sharing the same decomposable
 #' graph G. Here, G = (V,E) is obtained from the pathway topology conversion, where V and E
@@ -802,54 +807,6 @@ singleSourceSet<-function(ordering,data,classes,seed=NULL,
 #' The number of permutations depends on the method, the alpa level chosen, and the number of hypotheses. A minimum number of 500 and a maximum number of 10.000 permutations are allowed.
 #'
 #' @seealso \code{\link[graphite]{pathways}}, \code{\link[SourceSet]{infoSource}}, \code{\link[SourceSet]{easyLookSource}}, \code{\link[SourceSet]{sourceSankeyDiagram}},  \code{\link[SourceSet]{sourceCytoscape}} and  \code{\link[SourceSet]{sourceUnionCytoscape}}
-#' @examples
-#'
-#'
-#' #### Toy example: only one graph
-#' if(require(mvtnorm)){
-#'   # Generate two random samples of size 50 from two multivariate normal distributions
-#'   n<-50
-#'   # true parameters of class 1 and class 2
-#'   param.class1<-simulation$condition1
-#'   param.class2<-simulation$condition2$`10`$`2`
-#'
-#'   # simulated dataset
-#'   data.class1<-rmvnorm(n = n,mean =param.class1$mu ,sigma =param.class1$S)
-#'   data.class2<-rmvnorm(n = n,mean =param.class2$mu ,sigma=param.class2$S)
-#'
-#'   # Input arguments for the sourceSet function
-#'   data<-rbind(data.class1,data.class2)
-#'   classes<-c(rep(1,nrow(data.class1)),rep(2,nrow(data.class2)))
-#'   graphs<-list("toy.graph"=simulation$graph)
-#'
-#'   result<-sourceSet(graphs ,data ,classes ,seed = 123 ,permute =FALSE ,shrink =FALSE, alpha=0.05  )
-#'
-#'   # source set: primary disregulation (toy.graph)
-#'   result$toy.graph$primarySet
-#'   # secondary disregulation (toy.graph)
-#'   result$toy.graph$secondarySet
-#'   # all affected variables
-#'   unique(unlist(result$toy.graph$orderingSet))
-#'
-#'   # summary statistics
-#'   info<-infoSource(result)
-#'   info$variable
-#'   info$graph
-#'
-#'   # visual summaries
-#'   easyLookSource(result)
-#'   sourceSankeyDiagram(result)
-#' }
-#'
-#' # launch cytoscape and run:
-#' \donttest{
-#' sourceCytoscape(result,name.graphs = "toy.graph",collection.name = "Example")
-#' sourceUnionCytoscape(result ,collection.name = "Example")
-#' }
-#'
-#' ### Real data:
-#' # see vignette, section Getting deepening
-#' vignette("SourceSet")
 #' @export
 sourceSet<-function(graphs,data,classes,seed=NULL,
                     theta=1, permute=TRUE,
@@ -878,7 +835,7 @@ sourceSet<-function(graphs,data,classes,seed=NULL,
   ## check graphs format
   if(!is.list(graphs)){
     stop("graphs argument must be a list of graphNEL object.")
-    if(class(graphs)=="graphNEL"){
+    if( !inherits(graphs,"graphNEL") ){ # class(graphs)=="graphNEL"
      graphs<-list(graphs)
     }
   } else {
@@ -1015,6 +972,7 @@ subGraphData<-function(data,graphs){
 #' }
 #' In the plot, the pathways are vertically ordered - top to bottom - according to the numbers of nodes in the source set. The genes are horizontally ordered (from left to right) based on the number of times they appear in a source set.
 #' @seealso \code{\link[SourceSet]{sourceSet}}, \code{\link[SourceSet]{sourceSankeyDiagram}}
+#' @return The function returns a \code{ggplot} object.
 #' @examples
 #' ## Load the SourceSetObj obtained from the source set analysis of ALL dataset
 #'
@@ -1040,7 +998,7 @@ easyLookSource<-function(sourceObj,name.graphs = names(sourceObj),
                          strsplit.variable=" ",strsplit.graph=" ",
                          col.primary="#324E7B",col.secondary="#86A6DF"){
 
-  if(class(sourceObj)!="sourceSetList"){
+  if( !inherits(sourceObj,"sourceSetList") ){ #class(sourceObj)!="sourceSetList"
     stop("invalid class: sourceObj must be a sourceSetList object")
   }
 
@@ -1209,7 +1167,7 @@ easyLookSource<-function(sourceObj,name.graphs = names(sourceObj),
 
     source_plot<-ggplot2::ggplot(data = dataframe_source,ggplot2::aes_(x=~as.factor(Variable),y=~as.factor(Graph)))+
       ggplot2::geom_tile(ggplot2::aes_(fill=~as.factor(Source)),colour="white")+
-      ggplot2::scale_fill_manual(name="Source set",limits=c("0","1","2"),values=c("gray",col.secondary,col.primary))+
+      ggplot2::scale_fill_manual(name="Source set",limits=c("0","1","2"),values=c("gray",col.secondary,col.primary),na.value = "white")+
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white", colour = "gray"),
                      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1,vjust = 0)  )+
       ggplot2::xlab(label.variable)+ggplot2::ylab(label.graph)+ggplot2::labs(label=title,subtitle = subtitle)
@@ -1219,7 +1177,7 @@ easyLookSource<-function(sourceObj,name.graphs = names(sourceObj),
 
     source_plot<-ggplot2::ggplot(data = dataframe_source,ggplot2::aes_(y=~as.factor(Variable),x=~as.factor(Graph)))+
       ggplot2::geom_tile(ggplot2::aes_(fill=~as.factor(Source)),colour="white")+
-      ggplot2::scale_fill_manual(name="Source set",limits=c("0","1","2"),values=c("gray",col.secondary,col.primary))+
+      ggplot2::scale_fill_manual(name="Source set",limits=c("0","1","2"),values=c("gray",col.secondary,col.primary),na.value = "white")+
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white", colour = "gray"),
                      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1,vjust = 0)  )+
       ggplot2::xlab(label.graph)+ggplot2::ylab(label.variable)+ggplot2::labs(label=title,subtitle = subtitle)
@@ -1273,6 +1231,7 @@ easyLookSource<-function(sourceObj,name.graphs = names(sourceObj),
 #' sourceSankeyDiagram(sourceObj = results.all, cutoff = 1 ,cut.extra.module = FALSE )
 #' # cut modules in which the variable is not contained
 #' sourceSankeyDiagram(sourceObj = results.all, cutoff = 1 ,cut.extra.module = TRUE )
+#' @return The function returns an interactive \code{sankeyNetwork} object.
 #' @export
 sourceSankeyDiagram<-function(sourceObj,name.graphs=names(sourceObj),
                               map.name.variable=NULL,
@@ -1280,7 +1239,7 @@ sourceSankeyDiagram<-function(sourceObj,name.graphs=names(sourceObj),
                               cut.extra.module=TRUE,
                               height=NULL,width=NULL){
 
-  if(class(sourceObj)!="sourceSetList"){
+  if( !inherits(sourceObj,"sourceSetList") ){ #class(sourceObj)!="sourceSetList"
     stop("invalid class: sourceObj must be a sourceSetList object")
   }
 
@@ -1481,7 +1440,7 @@ sourceSankeyDiagram<-function(sourceObj,name.graphs=names(sourceObj),
 # @param graph ...
 moralize<-function(graph){
 
-  if(class(graph)!="graphNEL"){
+  if( !inherits(graph,"graphNEL") ){ #class(graph)!="graphNEL"
     stop("graph argument is not a graphNEL object")
   }
 
@@ -1535,7 +1494,7 @@ sourceGraph<-function(sourceObj,name=NULL,
                       type="igraph",
                       dag.graph=NULL){
 
-  if(class(sourceObj)!="sourceSetList"){
+  if(  !inherits(sourceObj,"sourceSetList")  ){ #class(sourceObj)!="sourceSetList"
     stop("invalid class: sourceObj must be a sourceSetList object")
   }
 
@@ -1547,7 +1506,7 @@ sourceGraph<-function(sourceObj,name=NULL,
 
 
   if(!is.null(dag.graph)){
-    if(class(dag.graph)=="graphNEL"){
+    if( !inherits(dag.graph,"graphNEL")  ){ #class(dag.graph)=="graphNEL"
       graph<-dag.graph
     } else {
       stop("dag.graph must to be a graphNEL object")
@@ -1647,7 +1606,7 @@ sourceGraph<-function(sourceObj,name=NULL,
 #' @export
 infoSource<-function(sourceObj,map.name.variable=NULL,method="fdr"){
 
-  if(class(sourceObj)!="sourceSetList"){
+  if( !inherits(sourceObj,"sourceSetList") ){ #class(sourceObj)!="sourceSetList"
     stop("invalid class: sourceObj must be a sourceSetList object")
   }
 
@@ -1771,7 +1730,7 @@ infoSource<-function(sourceObj,map.name.variable=NULL,method="fdr"){
 # @param sourceObj ..
 scoreNode<-function(sourceObj){
 
-  if(class(sourceObj)!="sourceSetList"){
+  if( !inherits(sourceObj,"sourceSetList") ){ #class(sourceObj)!="sourceSetList"
     stop("invalid class: sourceObj must be a sourceSetList object")
   }
 
@@ -1874,11 +1833,12 @@ scoreNode<-function(sourceObj){
 #'
 #' To enable the display function to work properly, three simple steps are required:
 #' \itemize{
-#'    \item{ Download \href{http://www.cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
+#'    \item{ Download \href{https://cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
 #'    \item{ Complete installation wizard;}
 #'    \item{ Launch Cytoscape (before calling the functions).}
 #' }
 #' @seealso \code{\link[SourceSet]{sourceSet}}, \code{\link[SourceSet]{infoSource}}. \code{\link[SourceSet]{sourceUnionCytoscape}}, \code{r2cytoscape}
+#' @return The function returns an interactive session in Cytoscape.?
 #' @examples
 #' ## Load the SourceSetObj obtained from the source set analysis of ALL dataset
 #'
@@ -1892,16 +1852,19 @@ scoreNode<-function(sourceObj){
 #' graph.other<-setdiff(names(results.all),graph.signaling)
 #'
 #' ## Signaling collection
-#' \donttest{
+#'
+#' if(interactive()){
 #' cytoID.signaling<-sourceCytoscape(results.all,
 #'     name.graphs = graph.signaling, collection.name ="SignalingPathway")
 #' }
 #'
 #' ## Other collection
-#' \donttest{
+#' if(interactive()){
 #' cytoID.other<-sourceCytoscape(results.all,
 #'     name.graphs = graph.other, collection.name ="OtherPathway")
 #' }
+#'
+#'
 #' @export
 sourceCytoscape<-function(sourceObj,
                           name.graphs=names(sourceObj),
@@ -2058,7 +2021,7 @@ sourceCytoscape<-function(sourceObj,
 #'
 #' To enable the display function to work properly, three simple steps are required:
 #' \itemize{
-#'    \item{ Download \href{http://www.cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
+#'    \item{ Download \href{https://cytoscape.org/download.php}{Cytoscape} (version 3.3 or later);}
 #'    \item{ Complete installation wizard;}
 #'    \item{ Launch Cytoscape (before calling the functions).}
 #' }
@@ -2076,17 +2039,20 @@ sourceCytoscape<-function(sourceObj,
 #' graph.other<-setdiff(names(results.all),graph.signaling)
 #'
 #' ## Signaling collection
-#' \donttest{
+#'
+#' if(interactive()){
 #' cytoID.signaling.union<-sourceUnionCytoscape(results.all,
 #'       name.graphs =graph.signaling ,collection.name ="SignalingPathway",
 #'       network.name ="SignalingUnion")
 #' }
 #' ## Other collection
-#' \donttest{
+#'
+#' if(interactive()){
 #' cytoID.other.union<-sourceUnionCytoscape(results.all ,
 #'       name.graphs =graph.other,collection.name ="OtherPathway" ,
 #'       network.name ="OtherUnion")
 #' }
+#' @return The function returns an interactive session in Cytoscape.
 #' @export
 sourceUnionCytoscape<-function(sourceObj,name.graphs=names(sourceObj),
                                   collection.name="SourceSetUnion",
